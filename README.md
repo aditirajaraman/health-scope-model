@@ -1,6 +1,6 @@
 I created this model to detect water potability for urban cities for a research conference at Columbia University. I tested three different models: KNNs(K-nearest-neighbors), Logistic Regression, and the Random Forest Algorithm and tested their prediction accuracy.
 
-I tested all three of these models for their accuracy and bias. The Random Forest algorithm projected the greatest f1-score, and therefore the best accuracy. My team and I succedfully designed a web app to make 
+I tested all three of these models for their accuracy and bias. I found that the Random Forest algorithm projected the greatest f1-score, and therefore the best accuracy. My team and I succedfully designed a web app to make 
 the implementation of this model seamless and user-friendly. I designed the backend(e.g. imported necessary APIs, trained and tested Machine Learning models, data analysis/visualization, etc.), while my teammates designed the frontend.
 
 I later developed this code even further which is attached in the following link: https://colab.research.google.com/drive/1Lsm7bZtnCTD_NfHadWJ3BYHG5rvM_lj9?usp=sharing
