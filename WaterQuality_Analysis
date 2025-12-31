@@ -1,0 +1,180 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+df = pd.read_csv('WaterPotability_Dataset.csv')
+
+df.head()
+df.info
+
+# Checking for missing values
+df.isnull().sum()
+
+# Filling missing values with mean
+df['ph'].fillna(df['ph'].mean(), inplace=True)
+df['Sulfate'].fillna(df['Sulfate'].mean(), inplace=True)
+df['Trihalomethanes'].fillna(df['Trihalomethanes'].mean(), inplace=True)
+
+#Data Visualization
+# Histograms for each parameter
+plt.figure(figsize=(15, 10))
+
+plt.subplot(2, 3, 1)
+sns.histplot(df['ph'], kde=True, color='blue')
+plt.title('Distribution of pH')
+
+plt.subplot(2, 3, 2)
+sns.histplot(df['Hardness'], kde=True, color='green')
+plt.title('Distribution of Hardness')
+
+plt.subplot(2, 3, 3)
+sns.histplot(df['Solids'], kde=True, color='red')
+plt.title('Distribution of Solids')
+
+plt.subplot(2, 3, 4)
+sns.histplot(df['Chloramines'], kde=True, color='purple')
+plt.title('Distribution of Chloramines')
+
+plt.subplot(2, 3, 5)
+sns.histplot(df['Sulfate'], kde=True, color='orange')
+plt.title('Distribution of Sulfate')
+
+plt.tight_layout()
+plt.show()
+
+#Visualizing relationship between parameters
+# Pairplot to visualize relationships
+sns.pairplot(df[['ph', 'Hardness', 'Solids', 'Chloramines', 'Sulfate']])
+plt.show()
+
+#Detect Outliers
+plt.figure(figsize=(15, 10))
+
+plt.subplot(2, 3, 1)
+sns.boxplot(y=df['ph'], color='blue')
+plt.title('Boxplot of pH')
+
+plt.subplot(2, 3, 2)
+sns.boxplot(y=df['Hardness'], color='green')
+plt.title('Boxplot of Hardness')
+
+plt.subplot(2, 3, 3)
+sns.boxplot(y=df['Solids'], color='red')
+plt.title('Boxplot of Solids')
+
+plt.subplot(2, 3, 4)
+sns.boxplot(y=df['Chloramines'], color='purple')
+plt.title('Boxplot of Chloramines')
+
+plt.subplot(2, 3, 5)
+sns.boxplot(y=df['Sulfate'], color='orange')
+plt.title('Boxplot of Sulfate')
+
+plt.tight_layout()
+plt.show()
+
+#data pre-processing
+from sklearn.preprocessing import StandardScaler
+
+scaler = StandardScaler()
+df[['ph', 'Hardness', 'Solids', 'Chloramines', 'Sulfate']] = scaler.fit_transform(df[['ph', 'Hardness', 'Solids', 'Chloramines', 'Sulfate']])
+
+from scipy import stats
+
+# Removing outliers based on Z-score
+df = df[(np.abs(stats.zscore(df[['ph', 'Hardness', 'Solids', 'Chloramines', 'Sulfate']])) < 3).all(axis=1)]
+
+# Example: encoding a categorical variable if it exists
+#df = pd.get_dummies(df, columns=['Potability']
+df.tail()
+
+from sklearn.model_selection import train_test_split
+
+X = df[['ph', 'Hardness', 'Solids', 'Chloramines', 'Sulfate']]
+y = df['Potability']
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+#Build Logistic Regression Model
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+
+model = LogisticRegression()
+model.fit(X_train, y_train)
+
+#Make Predictions
+y_pred = model.predict(X_test)
+
+#Evaluate the model
+accuracy = accuracy_score(y_test, y_pred)
+cm = confusion_matrix(y_test, y_pred)
+report = classification_report(y_test, y_pred)
+
+print(f'Accuracy: {accuracy}')
+print('Confusion Matrix:')
+print(cm)
+print('Classification Report:')
+print(report)
+
+#KNN model
+from sklearn.neighbors import KNeighborsClassifier
+knn = KNeighborsClassifier(n_neighbors=5)
+knn.fit(X_train, y_train)
+
+y_pred = knn.predict(X_test)
+
+accuracy = accuracy_score(y_test, y_pred)
+cm = confusion_matrix(y_test, y_pred)
+report = classification_report(y_test, y_pred)
+
+print(f'Accuracy: {accuracy}')
+print('Confusion Matrix:')
+print(cm)
+print('Classification Report:')
+print(report)
+
+#decision tree
+from sklearn.tree import DecisionTreeClassifier
+
+dt = DecisionTreeClassifier(random_state=42)
+dt.fit(X_train, y_train)
+
+y_pred = dt.predict(X_test)
+accuracy = accuracy_score(y_test, y_pred)
+cm = confusion_matrix(y_test, y_pred)
+report = classification_report(y_test, y_pred)
+
+print(f'Accuracy: {accuracy}')
+print('Confusion Matrix:')
+print(cm)
+print('Classification Report:')
+print(report)
+
+# SVM Model
+from sklearn.svm import SVC
+
+svm = SVC(kernel='linear', random_state=42)
+svm.fit(X_train, y_train)
+
+y_pred = svm.predict(X_test)
+accuracy = accuracy_score(y_test, y_pred)
+cm = confusion_matrix(y_test, y_pred)
+report = classification_report(y_test, y_pred)
+
+print(f'Accuracy: {accuracy}')
+print('Confusion Matrix:')
+print(cm)
+print('Classification Report:')
+print(report)
+
+# New water sample with 5 parameters
+new_sample = [[7.5, 140, 23000, 9.5, 380]]
+
+# Scale the new sample using the same scaler
+new_sample_scaled = scaler.transform(new_sample)
+
+# Predict potability for the new sample
+new_prediction = knn.predict(new_sample_scaled)
+print('Predicted Potability:', new_prediction)
